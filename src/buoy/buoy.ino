@@ -72,7 +72,7 @@ void loop() {
 	if ((millis() - lastNoiseReading) >= noiseMeasurementInterval) {
 		long noiseLevel = 0;
 		getNoiseLevel(&noiseLevel);
-		if (noiseLevel > noiseThreshold)
+		if (noiseLevel >= noiseThreshold)
 			warnStation();
 
 		// Record noise level if it is higher than the current record.
@@ -82,4 +82,3 @@ void loop() {
 		lastNoiseReading = millis();
 	}
 }
-
