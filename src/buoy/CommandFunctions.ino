@@ -3,16 +3,16 @@
 */
 void interpretNewData() {
 	if (expectedType == 0)
-		interpretCommand(&incomingByte[0]);
+		interpretCommand(&incomingByte); // If next expected data is a command byte
 	else
-		processReceivedInt();
+		processReceivedInt(); // If the received data is expected to be an integer value.
 }
 
 /**
 * Interpret a received command byte
 */
 void interpretCommand(byte * command) {
-	switch (&command) {
+	switch (*command) {
 		case 33:
 			// Expect next received transmission is an integer value containing the new temporary threshold.
 			expectedType = 33;
@@ -56,8 +56,7 @@ void sendTempNoiseThreshold() {
 * Retrieve and send the saved noise threshold in the EEPROM.
 */
 void sendSavedNoiseThreshold() {
-	EEPROM(0,outgoingInt);
-	
+	EEPROM.get(0,outgoingInt);
 	sendInt();
 }
 
