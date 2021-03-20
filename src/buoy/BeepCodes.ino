@@ -1,9 +1,11 @@
 int longBeepDuration = 1500;
 
 /**
-* 3 long beeps for problems with the transceiver.
+* 3 long beeps with 2 seconds in between.
+* This means the transceiver is undetectable by the Arduino.
+* This error requires manual inspection/diagnosis.
 */
-void radioErrorBeep() {
+void radioInitErrorLoop() {
 	do {
 		tone(BUZZER, 1000, longBeepDuration);
 		delay(longBeepDuration + 200);
@@ -15,8 +17,8 @@ void radioErrorBeep() {
 }
 
 /**
-* 1 long beep upon successfully connecting to the station.
+* 1 long beep upon successfully connecting to the station and initializing all variables.
 */
-void connectedBeep() {
+void initializationSuccessBeep() {
 	tone(BUZZER, 1000, longBeepDuration);
 }

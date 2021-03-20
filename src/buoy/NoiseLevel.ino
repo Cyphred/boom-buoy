@@ -1,31 +1,35 @@
 /**
-* Loads the saved noise threshold from EEPROM.
+* Sets the noise threshold.
 */
-void loadNoiseThreshold() {
-	EEPROM.get(0, noiseThreshold);
-	if (!noiseThreshold)
-		noiseThreshold = 300; // Default to 300 if there is no saved threshold
+void setNoiseThreshold(unsigned int value) {
+	noiseThreshold = value;
 }
-
 /**
-* Gets the saved threshold in the EEPROM and compares it
-* with the current runtime's threshold. If they are not the same,
-* the current runtime's threshold is saved into EEPROM.
+* Sets the noise measurement interval.
 */
-void saveNoiseThreshold() {
-	int savedThreshold;
-	EEPROM.get(0,savedThreshold);
-	if (savedThreshold != noiseThreshold)
-		EEPROM.put(0,noiseThreshold);
+void setMeasurementInterval(int value) {
+	measurementInterval = value;
 }
 
 /**
  * Reads the analog noise level being picked up by the mic and saves its value.
  */
-void getNoiseLevel(long * level) {
+long measureNoiseLevel() {
+	long level;
 	// Take 32 samples
 	for(int i=0; i<32; i++)
-		*level += analogRead(mic);
-	*level >>= 5; // Shift 5 bits to right
+		level += analogRead(mic);
+	level >>= 5; // Shift 5 bits to right
+	return level;
 }
 
+/**
+* Determines if it is time to do another noise level reading.
+*/
+bool isTimeToMeasureNoise() {
+	// If difference of current time and the time of the last reading
+	// reaches or exceeds the defined interval.
+	if ((millis() - lastNoiseReading) >= noiseMeasurementInterval)
+		return true;
+	return false;
+}
