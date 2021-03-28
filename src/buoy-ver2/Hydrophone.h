@@ -6,19 +6,11 @@
 class Hydrophone {
 	private:
 		byte pin;
-		unsigned int noiseThreshold;
-		unsigned int measurementInterval;
-		long lastMeasurement;
+		byte samples;
 	
 	public:
-		Hydrophone(int pin);
-		bool isReady();
-		void setNoiseThreshold(unsigned int value);
-		unsigned int getNoiseThreshold();
-		void setMeasurementInterval(unsigned int value);
-		unsigned int getMeasurementInterval();
+		Hydrophone(int pin, int samples);
 		long measure();
-		bool isTimeToMeasure();
 };
 
 #endif

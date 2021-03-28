@@ -5,39 +5,12 @@
  * Must be called in the setup() function.
  *
  * @param pin is the analog pin on the arduino where the hydrophone is connected.
+ * @param samples is the number of samples to average per reading.
  */
-Hydrophone::Hydrophone(int pin) {
+Hydrophone::Hydrophone(int pin, int samples) {
 	this->pin = pin;
+	this->samples = samples;
 	pinMode(pin, OUTPUT);
-}
-
-/**
- * Checks if all hydrophone variables have been initialized.
- *
- * @return is true if all necessary variables have valid values. Returns false if not.
- */
-bool Hydrophone::isReady() {
-	if ( ! noiseThreshold )
-		return false;
-	if ( ! measurementInterval )
-		return false;
-	return true;
-}
-
-void Hydrophone::setNoiseThreshold(unsigned int value) {
-	noiseThreshold = value;
-}
-
-unsigned int Hydrophone::getNoiseThreshold() {
-	return noiseThreshold;
-}
-
-void Hydrophone::setMeasurementInterval(unsigned int value) {
-	measurementInterval = value;
-}
-
-unsigned int Hydrophone::getMeasurementInterval() {
-	return measurementInterval;
 }
 
 /**
@@ -47,21 +20,9 @@ unsigned int Hydrophone::getMeasurementInterval() {
  */
 long Hydrophone::measure() {
 	long level;
-	for ( byte i = 0 ; i < 32 ; i++ )
+	for ( byte i = 0 ; i < samples ; i++ )
 		level += analogRead( pin );
 	level >>= 5; // Shift 5 bits to the right.
-	return level;
-}
 
-/**
- * Determines if it is time to make another measurement based on the time of the
- * last measurement, and the measurement interval.
- *
- * @return is true if the gap between the current time and the last measurement
- * time is equal to or larger than the measurement interval.
- */
-bool Hydrophone::isTimeToMeasure() {
-	if ( ( millis() - lastMeasurement ) > measurementInterval )
-		return true;
-	return false;
+	return level;
 }
