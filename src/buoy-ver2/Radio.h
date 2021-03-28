@@ -10,11 +10,12 @@
 class Radio {
 	private:
 		RF24 rf;
-		const byte txAddress[5];
-		const byte rxAddress[5];
+		byte txAddress[5];
+		byte rxAddress[5];
 		Packet receivedData;
 		Packet transmitData;
 	public:
+		Radio(byte ce, byte csn, byte * rx, byte * tx);
 		bool initializeRadio();
 		bool receive(Packet * packet);
 		bool transmit(Packet * packet);

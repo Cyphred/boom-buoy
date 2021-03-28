@@ -1,11 +1,20 @@
 #include "Radio.h"
 
-#define CE_PIN   9
-#define CSN_PIN 10
-
-RF24 rf( CE_PIN, CSN_PIN );
-const byte rxAddress[5] = { 'R','x','A','A','A' };	// Receive from this address
-const byte txAddress[5] = { 'T','x','a','a','a' };	// Transmit to this address
+/**
+ * Constructs a Radio object.
+ *
+ * @param ce is the pin where CE from the tranceiver is connected.
+ * @param csn is the pin where CSN from the tranceiver is connected.
+ * @param rxAddress is the array of bytes containing the receive address for incoming data.
+ * @param txAddress is the array of bytes containing the transmit address for outgoing data.
+ */
+Radio::Radio(byte ce, byte csn, byte * rx, byte * tx) : rf(ce, csn) {
+	// Addresses should always be 5 bytes in length.
+	for (byte i = 0; i < 5 ; i++ ) {
+		rxAddress[i] = rx[i];
+		txAddress[i] = tx[i];
+	}
+}
 
 /**
  * Initializes the transceiver.
