@@ -7,18 +7,21 @@
 #include <RF24.h>
 #include "Packet.h"
 
+#define DELAY 3		// Delay between each transmission attempt.
+#define MAX_RETRIES 5	// Maximum number of retries before connection time out.
+
 class Radio {
 	private:
 		RF24 rf;
 		byte txAddress[5];
 		byte rxAddress[5];
-		Packet receivedData;
-		Packet transmitData;
+		bool initialized;
+
 	public:
 		Radio(byte ce, byte csn, byte * rx, byte * tx);
-		bool initializeRadio();
 		bool receive(Packet * packet);
 		bool transmit(Packet * packet);
+		bool isInitialized();
 };
 
 #endif

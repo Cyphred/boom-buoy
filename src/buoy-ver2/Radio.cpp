@@ -14,30 +14,25 @@ Radio::Radio(byte ce, byte csn, byte * rx, byte * tx) : rf(ce, csn) {
 		rxAddress[i] = rx[i];
 		txAddress[i] = tx[i];
 	}
-}
 
-/**
- * Initializes the transceiver.
- *
- * @return is true if the transceiver has been properly initialized.
- */
-bool Radio::initializeRadio() {
 	rf.begin();
 	if ( rf.isChipConnected() ) {
 		rf.setDataRate( RF24_250KBPS );
 		rf.openWritingPipe( txAddress );
 		rf.openReadingPipe( 1, rxAddress );
-		rf.setRetries( 3, 5 ); // delay between each retry, number of retries
+		rf.setRetries( DELAY, MAX_RETRIES );
 		rf.startListening();
-		return true;
+		initialized = true;
 	}
-	return false;
+	else {
+		initialized = false;
+	}
 }
 
 /**
 * Fetches the data from the receive buffer of the transceiver and stores it.
 *
-* @param packet is the pointer to the packet where the received data will be written to.
+* @param *packet is the pointer to the packet where the received data will be written to.
 * @return is true if data has been fetched and stored into a packet. False data is unavailable.
 */
 bool Radio::receive(Packet * packet) {
@@ -51,6 +46,7 @@ bool Radio::receive(Packet * packet) {
 /**
  * Transmits data to the TX address.
  *
+ * @param *packet is the pointer to the packet where the received data will be written to.
  * @return true if an acknowledgement has been received.
  */
 bool Radio::transmit(Packet * packet) {
@@ -60,4 +56,13 @@ bool Radio::transmit(Packet * packet) {
 	if ( acknowledged );
 		return true;
 	return false;
+}
+
+/**
+ * Tests if the transceiver has been properly initialized.
+ *
+ * @return is true if the transceiver is properly initialized.
+ */
+bool Radio::isInitialized() {
+	return initialized;
 }
