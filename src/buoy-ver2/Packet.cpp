@@ -48,4 +48,15 @@ void Packet::reset() {
 		data[i] = 0;
 }
 
-
+/**
+ * Checks if there is data in the packet.
+ *
+ * @return is true if there is data in the packet. False if it is empty.
+ */
+bool Packet::isEmpty() {
+	for (byte i = 0; i < 3; i++) {
+		if (data[i] != 0)
+			return false;
+	}
+	return true;
+}

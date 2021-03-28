@@ -18,6 +18,7 @@ class Packet {
 		unsigned int getUnsignedInt();
 		void storeUnsignedInt(unsigned int num);
 		void reset();
+		bool isEmpty();
 };
 
 #endif
