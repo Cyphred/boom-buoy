@@ -1,15 +1,6 @@
 #include "Packet.h"
 #include "Arduino.h"
 
-byte * Packet::getRawData() {
-	return data;
-}
-
-void Packet::setRawData(byte in[]) {
-	for (byte i = 0; i < 3; i++)
-		data[i] = in[i];
-}
-
 /**
  * Gets the byte portion of the packet.
  *

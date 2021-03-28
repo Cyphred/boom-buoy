@@ -4,7 +4,7 @@
 #include "Arduino.h"
 
 class Packet {
-	private:
+	public:
 		/**
 		 * Packets are 3 bytes in size.
 		 * The first byte is for the "command byte" which corresponds to
@@ -13,10 +13,6 @@ class Packet {
 		 * sending data back to the station.
 		 */
 		byte data[3];
-
-	public:
-		byte * getRawData();
-		void setRawData(byte in[]);
 		byte getByte();
 		void storeByte(byte value);
 		unsigned int getUnsignedInt();
