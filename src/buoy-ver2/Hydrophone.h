@@ -5,12 +5,12 @@
 
 class Hydrophone {
 	private:
-		byte pin;
-		byte samples;
+		byte pin;	// SIG pin of hydrophone
+		byte samples;	// Number of samples to be averaged per reading.
 	
 	public:
 		Hydrophone(int pin, int samples);
-		long measure();
+		int measure();
 };
 
 #endif

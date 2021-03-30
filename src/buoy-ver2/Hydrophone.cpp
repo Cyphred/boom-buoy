@@ -18,11 +18,11 @@ Hydrophone::Hydrophone(int pin, int samples) {
  *
  * @return the value of the measured noise level.
  */
-long Hydrophone::measure() {
+int Hydrophone::measure() {
 	long level;
 	for ( byte i = 0 ; i < samples ; i++ )
 		level += analogRead( pin );
 	level >>= 5; // Shift 5 bits to the right.
 
-	return level;
+	return (int) level;
 }
