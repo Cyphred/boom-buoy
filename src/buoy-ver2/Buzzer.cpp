@@ -8,7 +8,7 @@ Buzzer::Buzzer(int pin) {
 }
 
 /**
-* 3 long beeps with 2 seconds in between.
+* 3 long beeps with 200 ms in between.
 * This means the transceiver is undetectable by the Arduino.
 * This error requires manual inspection/diagnosis.
 */
@@ -18,7 +18,7 @@ void Buzzer::radioError() {
 	tone(pin, 1000, LONG_BEEP);
 	delay(LONG_BEEP + 200);
 	tone(pin, 1000, LONG_BEEP);
-	delay(LONG_BEEP + 2000);
+	delay(LONG_BEEP);
 }
 
 /**
