@@ -19,9 +19,10 @@ class Radio {
 
 	public:
 		Radio(byte ce, byte csn, byte * rx, byte * tx);
-		bool receive(Packet * packet);
+		void receive(Packet * packet);
 		bool transmit(Packet * packet);
 		bool isInitialized();
+		bool available();
 };
 
 #endif
