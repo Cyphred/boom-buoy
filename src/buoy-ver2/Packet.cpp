@@ -2,20 +2,20 @@
 #include "Arduino.h"
 
 /**
- * Gets the byte portion of the packet.
+ * Gets the header portion of the packet data.
  *
- * @return the byte portion of the packet.
+ * @return the header portion of the packet data.
  */
-byte Packet::getByte() {
+byte Packet::getHeader() {
 	return data[0];
 }
 
 /**
-* Puts a byte into the outbox.
+* Stores a byte as the header of the packet data.
 *
-* @param data is the byte to be put into the command address in the outbox.
+* @param data is the byte to be stored as the header of the packet data.
 */
-void Packet::storeByte(byte value) {
+void Packet::storeHeader(byte value) {
 	data[0] = value;
 }
 
@@ -24,7 +24,7 @@ void Packet::storeByte(byte value) {
 * This combines the last 2 bytes in the packet into an unsigned int.
 *
 * @return is the unsigned integer resulting from the combination of the
-* last 2 bytes of incomingPacket.
+* last 2 bytes of packet.
 */
 unsigned int Packet::getUnsignedInt() {
 	return (unsigned int) (data[2]<<8) | (data[1]);
@@ -44,8 +44,7 @@ void Packet::storeUnsignedInt(unsigned int num) {
  * Resets all the bytes in the packet.
  */
 void Packet::reset() {
-	for (byte i = 0; i < 3; i++)
-		data[i] = 0;
+	data[0] = data[1] = data[2] = 0;
 }
 
 /**
