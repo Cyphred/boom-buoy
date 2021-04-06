@@ -1,12 +1,11 @@
 import sys
-from Setup import *
+from Setup import isValidDevice
 from Device import *
 
 device = None
 
 def main():
-    if not deviceExists(sys.argv[1]) and not deviceIsValid(sys.argv[1]):
-        print(f"{sys.argv[1]} is an invalid device! Aborting...")
+    if not isValidDevice(sys.argv[1]):
         exit()
     
     print(f"Using device {sys.argv[1]}...")
