@@ -18,35 +18,79 @@
 *   unique node address. See variable nodeAddr[] below.
 */
 
-// Data structures
+#include "Constants.h"	// Constants for command codes
 #include "Packet.h"
 #include "Radio.h"
 #include "Hydrophone.h"
 #include "Buzzer.h"
 
+
 #define CE_PIN   9
 #define CSN_PIN 10
-const byte rxAddress[5] = { 'R','x','A','A','A' };	// Receive from this address
-const byte txAddress[5] = { 'T','x','a','a','a' };	// Transmit to this address
+const byte rxAddress[5] = { 'R','x','A','A','A' };	// Receive from this address.
+const byte txAddress[5] = { 'T','x','a','a','a' };	// Transmit to this address.
 Radio radio(CE_PIN, CSN_PIN, rxAddress, txAddress);
-Hydrophone hydrophone(A0, 32);	// Initialize on A0 with 32 samples
-Buzzer buzzer(8);		// Initialize on D8
+Packet incoming;
+Packet outgoing;
+Buzzer buzzer(8); // Initialize on D8.
+unsigned long lastPing;
+struct Settings {
+	unsigned int measurementInterval;	// Time in ms between each noise level measurement.
+	int varianceThreshold;			// The percentage of tolerable variance 
+	unsigned int pingTimeout;		// Time in ms before declaring TX as unresponsive.
+	byte mode;				// Operational mode
+} settings;
 
-// Time Variables ============================================================================
-unsigned long lastPing;			// Time last pinged by the station.
-unsigned int pingInterval;		// Interval between each ping.
-
-// Operational Variables =====================================================================
-// The operation mode of the buoy.
-// 0 - Monitor mode, this is the default.
-// 1 - Stream mode, this will stream live noise levels to the station.
-#define MODE_DISCONNECTED 0
-#define MODE_MONITOR 1
-#define MODE_STREAM 2
-byte mode;
 
 void setup() {
+	// Check if the transceiver is NOT ready for use.
+	// If not ready, goes into an indefinite loop signalling a malfunction.
+	if (!radio.isInitialized())
+		radioErrorLoop(); 
+
+	settings.mode = MODE_DISCONNECTED; // Set mode to disconnected by default.
 }
 
 void loop() {
+	switch (settings.mode) {
+		case MODE_MONITOR:
+			if (isTimeToMeasure())
+				measure();
+			break;
+		case MODE_STREAM:
+			; // TODO Add routine for stream mode.
+			break;
+		case MODE_DISCONNECTED:
+			initialize();
+			break;
+	}
+
+	if (receive())
+		interpret(&incoming);
+
+	if (isConnectionTimedOut())
+		disconnect();
+}
+
+/**
+* Determines if it has been to long since the station has pinged for the buoy's presence.
+* If gap between current time and time of last ping is equal to or greater than the threshold,
+* assume that the station has been disconnected.
+*
+* @return is true if connection has timed out. False if not.
+*/
+bool isConnectionTimedOut() {
+	if ((millis() - lastPing) < settings.pingTimeout)
+		return false;
+	return true;
+}
+
+/**
+* Infinite loop for indicating an error with initializing the transceiver.
+*/
+void radioErrorLoop() {
+	while (true) {
+		buzzer.radioError();
+		delay(2000);
+	}
 }
