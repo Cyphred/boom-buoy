@@ -8,7 +8,8 @@ class Buzzer {
 		int pin;
 	public:
 		Buzzer(int pin);
-		void initializationSuccess();
+		void initSuccess();
+		void disconnected();
 		void radioError();
 };
 
