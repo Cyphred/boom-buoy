@@ -20,9 +20,9 @@ class Packet {
 		 */
 		byte data[3];
 		byte getHeader();
-		void storeHeader(byte value);
-		unsigned int getUnsignedInt();
-		void storeUnsignedInt(unsigned int num);
+		void setHeader(byte value);
+		unsigned int getContent();
+		void setContent(unsigned int num);
 		void reset();
 		bool isEmpty();
 };

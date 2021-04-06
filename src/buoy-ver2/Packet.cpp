@@ -11,31 +11,31 @@ byte Packet::getHeader() {
 }
 
 /**
-* Stores a byte as the header of the packet data.
+* Sets a byte as the header of the packet data.
 *
 * @param data is the byte to be stored as the header of the packet data.
 */
-void Packet::storeHeader(byte value) {
+void Packet::setHeader(byte value) {
 	data[0] = value;
 }
 
 /**
-* Gets the unsigned integer from the packet.
+* Gets the content from the packet data.
 * This combines the last 2 bytes in the packet into an unsigned int.
 *
 * @return is the unsigned integer resulting from the combination of the
 * last 2 bytes of packet.
 */
-unsigned int Packet::getUnsignedInt() {
+unsigned int Packet::getContent() {
 	return (unsigned int) (data[2]<<8) | (data[1]);
 }
 
 /**
-* Splits an unsigned integer into two bytes and stores them in the packet.
+* Splits an unsigned integer into two bytes and stores them as the content in the packet data.
 *
-* @param num is the unsigned integer to be stored in the packet.
+* @param num is the unsigned integer to be stored as the content in the packet data.
 */
-void Packet::storeUnsignedInt(unsigned int num) {
+void Packet::setContent(unsigned int num) {
 	data[1] = (byte) (num & 0xFF);
 	data[2] = (byte) ((num >> 8) & 0xFF);
 }
