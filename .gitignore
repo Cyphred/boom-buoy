@@ -2,3 +2,4 @@ datasheets/*
 src/scratch/*
 notes/gcash-receipt-*
 notes/meeting*
+*.pyc
