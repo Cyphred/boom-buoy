@@ -19,10 +19,10 @@ class Radio {
 
 	public:
 		Radio(byte ce, byte csn, byte * rx, byte * tx);
-		void receive(Packet * packet);
+		void storeReceivedDataIn(Packet * packet);
 		bool transmit(Packet * packet);
 		bool isInitialized();
-		bool available();
+		bool isDataAvailable();
 };
 
 #endif

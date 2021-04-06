@@ -34,7 +34,7 @@ Radio::Radio(byte ce, byte csn, byte * rx, byte * tx) : rf(ce, csn) {
 *
 * @param *packet is the pointer to the packet where the received data will be written to.
 */
-void Radio::receive(Packet * packet) {
+void Radio::storeReceivedDataIn(Packet * packet) {
 	rf.read( &packet->data, sizeof( packet->data ) ); // Read data from rf buffer and store it into packet's array.
 }
 
@@ -67,6 +67,6 @@ bool Radio::isInitialized() {
  *
  * @return is true if there is data in the receive buffer.
  */
-bool Radio::available() {
+bool Radio::isDataAvailable() {
 	return rf.available();
 }
