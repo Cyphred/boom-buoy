@@ -1,15 +1,45 @@
 /**
+* Initialize buoy variables after establishing a connection with the station.
+* This is a blocking method that will not proceed until initialization is complete.
+*/
+void initialize() {
+	while (settings.mode == MODE_DISCONNECTED) {
+		waitForConnectionRequest();
+		if (waitForInitialVariables(1000))
+			buzzer.initSuccess(); // If all variables are received on time.
+		else
+			resetSettings(); // If one of the variables failed to arrive on time.
+	}
+	lastPing = millis();
+}
+
+/**
+* Indefinitely waits for a connection request.
+*/
+void waitForConnectionRequest() {
+	while (true) {
+		if (!receive())
+			continue;
+		if (incoming.getHeader() == CONNECT)
+			break;
+	}
+	// Tell station that the buoy is ready to receive the initial variables.
+	send(RESP_CONNECT_OK); 
+}
+
+/**
 * Waits for station to set required parameters for operation.
 *
+* @param timeout is the time to wait for each parameter to arrive.
 * @return is true if all paramters have been received. False if not.
 */
-bool waitForInitialization() {
+bool waitForInitialVariables(unsigned long timeout) {
 	// List of expected headers. Make sure the station sends them in this order.
 	byte headers[4] = { SET_VARIANCETHRESHOLD, SET_MEASUREMENTINTERVAL, SET_PINGTIMEOUT, SET_MODE };
 
 	// Iterate through each header.
 	for ( byte i = 0; i < 4; i++ ) {
-		if (waitForHeader(headers[i], 1000))
+		if (_waitForHeader(headers[i], &timeout))
 			interpret(&incoming);
 		else
 			return false;
@@ -23,21 +53,23 @@ bool waitForInitialization() {
 * @param timeout is the time in ms to wait before timing out.
 * @return is true if the data matches and received within the allowed time.
 */
-bool waitForHeader(byte header, unsigned long timeout) {
+bool _waitForHeader(byte header, unsigned long * timeout) {
 	unsigned long timeStart = millis();
 	do {
-		if (!radio.isDataAvailable()) continue;
-		radio.storeReceivedDataIn(&incoming);
+		if (!receive()) 
+			continue;
+
 		if (incoming.getHeader() == header)
 			return true;
 		else {
-			outgoing.setHeader(ILLEGAL_HEADER);
-			outgoing.setContent(0);
-			radio.transmit(&outgoing);
+			send(ILLEGAL_HEADER, header);
 			return false;
 		}
-	} while ( (millis() - timeStart) < timeout );
-	return false; // When timed out
+	} while ( (millis() - timeStart) < *timeout );
+
+	// Tell station that the window for sending initial variables is up.
+	send(TIMEOUT_INIT, header); 
+	return false;
 }
 
 /**
