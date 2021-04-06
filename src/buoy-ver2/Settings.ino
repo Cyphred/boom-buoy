@@ -3,27 +3,29 @@
 */
 
 /**
-* Checks if a connection request should be entertained.
-*
-* @return is true if the connection request is approved. False if not.
+* Handles connection requests.
 */
-bool acknowledgeConnectionRequest() {
+void connect() {
+	// If the buoy receives a connection request while in a
+	// non-disconnected state, tell the station that it
+	// has sent an illegal connection request. At this point,
+	// the station must wait for an existing connection to
+	// terminate, whether terminated by the actively controlling
+	// station, or by timing out from the existing connection.
 	if (settings.mode != MODE_DISCONNECTED) {
 		send(ILLEGAL_CONNECT);
-		return false;
 	}
 
 	// Tells the station the connection is approved.
 	// This will make the station send the initialization variables.
 	send(RESP_CONNECT_OK); 
-	return false;
 }
 
 /**
 * Sets the device to a disconnected state.
 */
 void disconnect() {
-	settings.mode = MODE_DISCONNECTED;
+	resetSettings();
 	buzzer.disconnected();
 }
 
@@ -40,7 +42,7 @@ void setMode(int code) {
 			settings.mode = code;
 			break;
 		default:
-			warn(ILLEGAL_CONTENT, SET_MODE);
+			send(ILLEGAL_CONTENT, SET_MODE);
 			break;
 	}
 }
@@ -71,4 +73,15 @@ void setMeasurementInterval(unsigned int interval) {
 */
 void setPingTimeout(unsigned int timeout) {
 	settings.pingTimeout = timeout;
+}
+
+/**
+* Resets all operational variables.
+*/
+void resetSettings() {
+	settings.measurementInterval = 0;
+	settings.varianceThreshold = 0;
+	settings.pingTimeout = 0;
+	settings.mode = MODE_DISCONNECTED;
+	lastPing = 0;
 }
