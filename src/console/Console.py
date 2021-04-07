@@ -1,22 +1,25 @@
 import sys
 from Setup import isValidDevice
 from Device import *
+from Settings import *
 
 device = None
+settings = None
 
 def main():
+    # Verifies that a parameter has been passed
+    if len(sys.argv) == 1:
+        print("ERROR: No device specified. Aborting...")
+        exit()
+
     if not isValidDevice(sys.argv[1]):
         exit()
     
-    print(f"Using device {sys.argv[1]}...")
-    device = Device(sys.argv[1], 9600)
+    print(f"Connecting to device {sys.argv[1]}...", end=" ")
+    device = Device(sys.argv[1], 9600) # Creates the device
+    print("connected!")
 
-    while True:
-        inp = input("Enter something: ")
-        device.write(inp)
-        response = device.read()
-        print(f"Device has responded: {response}")
-
+    settings = Settings('settings.json')
 
 if __name__ == "__main__":
     main()
