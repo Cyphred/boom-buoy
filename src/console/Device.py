@@ -13,6 +13,11 @@ class Device:
     def write(self, data):
         self.device.write(bytes(data, 'utf-8'))
 
+    # Writes a stream of bytes to serial
+    def writeStream(self, data):
+        self.write(str(data))
+        self.write(chr(2))
+
     # Fetches data from serial
     def read(self):
         data = self.device.readline()

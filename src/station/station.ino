@@ -44,7 +44,6 @@ bool connectedToConsole;
 
 void setup() {
 	Serial.begin(9600);
-
 	// Check if the transceiver is NOT ready for use.
 	// If not ready, goes into an indefinite loop signalling a malfunction.
 	// if (!radio.isInitialized())
