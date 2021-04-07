@@ -38,7 +38,7 @@ def authenticateWithDevice(device, timeout):
     # Send connection requests to device until a response is received,
     # or until the allowed time expires.
     while not reply and (time.time() - start) < timeout:
-        device.write('g')
+        device.write(chr(1))
         reply = device.read()
 
     # reply is empty if no response has been received
@@ -47,11 +47,16 @@ def authenticateWithDevice(device, timeout):
         print("ERROR: Device took to long to respond.")
         return False
 
+    # print(f"reply is {reply}")
     # if the magic byte is received
-    if reply == 'g':
+    if reply == chr(100):
         print("OK")
         return True
+    elif reply == chr(101):
+        print("FAILED")
+        print(f"ERROR: Device rejected connection. Another instance of the console might be running?")
     else:
         print("FAILED")
-        print("ERROR: Device sent an invalid response. Are you sure you selected the correct device?")
-        return False
+        print(f"ERROR: Device sent an invalid response. Are you sure you selected the correct device?")
+
+    return False
