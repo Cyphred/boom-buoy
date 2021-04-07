@@ -2,6 +2,7 @@ import sys
 from Setup import *
 from Device import *
 from Settings import *
+from StationCommands import *
 
 device = None
 settings = None
