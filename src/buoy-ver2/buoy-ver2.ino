@@ -15,7 +15,7 @@
 *
 * - This sketch was written with the intention of testing on only one node and one station.
 *   If you want to add more nodes, you will have to individually set up each node with a
-*   unique node address. See variable nodeAddr[] below.
+*   unique node address. See variable rxAddress[] below.
 */
 
 #include "Constants.h"	// Constants for command codes
@@ -23,7 +23,6 @@
 #include "Radio.h"
 #include "Hydrophone.h"
 #include "Buzzer.h"
-
 
 #define CE_PIN   9
 #define CSN_PIN 10
