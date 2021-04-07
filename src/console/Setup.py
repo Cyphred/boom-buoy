@@ -1,6 +1,7 @@
 import os.path
 import serial.tools.list_ports
 
+# Checks if the device is valid
 def isValidDevice(device):
     if not _deviceExists(device):
         print(f"ERROR: \"{device}\" does not exist.")

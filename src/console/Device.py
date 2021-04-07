@@ -10,7 +10,6 @@ class Device:
 
     # Writes data over serial
     def write(self, data):
-        print(f"You have entered: {data}")
         self.device.write(bytes(data, 'utf-8'))
 
     # Fetches data from serial
