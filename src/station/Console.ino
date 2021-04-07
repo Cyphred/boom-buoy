@@ -17,14 +17,16 @@ void interpretConsoleCommand(byte command) {
 		case (byte) CON_SET_MODE:
 			break;
 		case (byte) CON_GET_VARIANCETHRESHOLD:
+			consoleGetVariancethreshold();
 			break;
 		case (byte) CON_GET_MEASUREMENTINTERVAL:
+			consoleGetMeasurementInterval();
 			break;
 		case (byte) CON_GET_PINGTIMEOUT:
-			consolePingTimeoutQuery();
+			consoleGetPingTimeout();
 			break;
 		case (byte) CON_GET_MODE:
-			consoleModeQuery();
+			consoleGetMode();
 			break;
 	}
 }
@@ -44,13 +46,21 @@ void consoleConnect() {
 	}
 }
 
-void consolePingTimeoutQuery() {
+void consoleGetVariancethreshold() {
+	Serial.print(settings.varianceThreshold);
+}
+
+void consoleGetMeasurementInterval() {
+	Serial.print(settings.measurementInterval);
+}
+
+void consoleGetPingTimeout() {
 	Serial.print(settings.pingTimeout);
 }
 
 /**
 * Query for state of connection.
 */
-void consoleModeQuery() {
+void consoleGetMode() {
 	Serial.print(settings.mode);
 }
