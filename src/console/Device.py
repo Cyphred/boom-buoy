@@ -1,4 +1,5 @@
 import serial
+import time
 
 class Device:
     device = None
@@ -16,3 +17,12 @@ class Device:
     def read(self):
         data = self.device.readline()
         return data.decode('utf-8') # Decode bytes object back into a string
+
+    # Blocks until data is received
+    def waitForData(self):
+        data = None
+        start = time.time()
+        while not data:
+            data = self.read()
+
+        return data;
