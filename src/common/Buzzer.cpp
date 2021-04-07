@@ -2,17 +2,27 @@
 
 #define LONG_TONE 1500
 #define SHORT_TONE 500
-#define FREQ 1000
+#define OK_FREQ 2500
+#define ERR_FREQ 500
 
 Buzzer::Buzzer(int pin) {
 	this->pin = pin;
+	pinMode(pin,OUTPUT);
+}
+
+void Buzzer::genericOK() {
+	tone(pin, OK_FREQ, SHORT_TONE);
+}
+
+void Buzzer::genericError() {
+	tone(pin, ERR_FREQ, SHORT_TONE);
 }
 
 /**
 * 1 long beep upon successfully connecting to the station and initializing all variables.
 */
 void Buzzer::initSuccess() {
-	tone(pin, FREQ, LONG_TONE);
+	tone(pin, OK_FREQ, LONG_TONE);
 }
 
 /**
@@ -20,7 +30,7 @@ void Buzzer::initSuccess() {
  */
 void Buzzer::disconnected() {
 	for (byte i = 0; i < 10; i++) {
-		tone(pin, FREQ, SHORT_TONE);
+		tone(pin, OK_FREQ, SHORT_TONE);
 		delay(SHORT_TONE + 200);
 	}
 }
@@ -32,7 +42,7 @@ void Buzzer::disconnected() {
 */
 void Buzzer::radioError() {
 	for (byte i = 0; i < 3; i++) {
-		tone(pin, FREQ, LONG_TONE);
+		tone(pin, ERR_FREQ, LONG_TONE);
 		delay(LONG_TONE + 200);
 	}
 }

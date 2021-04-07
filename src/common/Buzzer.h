@@ -8,6 +8,8 @@ class Buzzer {
 		int pin;
 	public:
 		Buzzer(int pin);
+		void genericOK();
+		void genericError();
 		void initSuccess();
 		void disconnected();
 		void radioError();
