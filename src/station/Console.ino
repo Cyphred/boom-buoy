@@ -21,8 +21,10 @@ void interpretConsoleCommand(byte command) {
 		case (byte) CON_GET_MEASUREMENTINTERVAL:
 			break;
 		case (byte) CON_GET_PINGTIMEOUT:
+			consolePingTimeoutQuery();
 			break;
 		case (byte) CON_GET_MODE:
+			consoleModeQuery();
 			break;
 	}
 }
@@ -40,4 +42,15 @@ void consoleConnect() {
 		Serial.write(CON_ACCEPT);
 		buzzer.genericOK();
 	}
+}
+
+void consolePingTimeoutQuery() {
+	Serial.print(settings.pingTimeout);
+}
+
+/**
+* Query for state of connection.
+*/
+void consoleModeQuery() {
+	Serial.print(settings.mode);
 }
