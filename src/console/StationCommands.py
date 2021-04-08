@@ -1,17 +1,63 @@
+import Console
 from Device import *
 import time
 
-def _setOperationalVariable(device, command, value):
-    response = _requestAndWait(device, command)
+def station_settings_get():
+    print("Fetching status info...")
+    mode = getMode()
+    interval = getMeasurementInterval()
+    timeout = getPingTimeout()
+    variance = getVarianceThreshold()
+    print(f"Mode: {mode}")
+    print(f"Measurement Interval: {interval}ms")
+    print(f"Ping Timeout: {timeout}ms")
+    print(f"Variance Threshold: {variance}%")
+
+def station_settings_apply():
+    print("Applying settings...")
+    timeout = Console.settings.data['buoy_settings']['ping_timeout']
+    mode = Console.settings.data['buoy_settings']['mode']
+    variance = Console.settings.data['buoy_settings']['variance_threshold']
+    interval = Console.settings.data['buoy_settings']['measurement_interval']
+
+    print(f"  Setting ping timeout to {timeout}ms...", end="")
+    if setPingTimeout(timeout):
+        print("OK")
+    else:
+        print("FAILED")
+
+    print(f"  Setting mode to {mode}...", end="")
+    if setMode(mode):
+        print("OK")
+    else:
+        print("FAILED")
+
+    print(f"  Setting variance threshold to {variance}%...", end="")
+    if setVarianceThreshold(variance):
+        print("OK")
+    else:
+        print("FAILED")
+
+    print(f"  Setting measurement interval to {interval}ms...", end="")
+    if setMeasurementInterval(interval):
+        print("OK")
+    else:
+        print("FAILED")
+
+def station_settings_edit():
+    print("edit settings")
+
+def _setOperationalVariable(command, value):
+    response = _requestAndWait(command)
     if response is chr(100):
-        device.writeStream(value)
+        Console.device.writeStream(value)
         response = None
     else:
         return False
 
     start = time.time()
     while not response and (time.time() - start) < 1000:
-        response = device.read()
+        response = Console.device.read()
 
     if response is chr(100):
         return True
@@ -19,39 +65,38 @@ def _setOperationalVariable(device, command, value):
         return False
 
 # Sends a get request to the station and waits for a response
-def _requestAndWait(device, command):
-    device.write(command)
-    data = device.waitForData()
+def _requestAndWait(command):
+    Console.device.write(command)
+    data = Console.device.waitForData()
     return data
 
-def setVarianceThreshold(device, value):
-    return _setOperationalVariable(device, chr(3), value)
+def setVarianceThreshold(value):
+    return _setOperationalVariable(chr(3), value)
 
-def setMeasurementInterval(device, value):
-    return _setOperationalVariable(device, chr(4), value)
+def setMeasurementInterval(value):
+    return _setOperationalVariable(chr(4), value)
 
-def setPingTimeout(device, value):
-    return _setOperationalVariable(device, chr(5), value)
+def setPingTimeout(value):
+    return _setOperationalVariable(chr(5), value)
 
-def setMode(device, value):
-    return _setOperationalVariable(device, chr(6), value)
+def setMode(value):
+    return _setOperationalVariable(chr(6), value)
 
-def getVarianceThreshold(device):
-    data = _requestAndWait(device, chr(7))
+def getVarianceThreshold():
+    data = _requestAndWait(chr(7))
     return int(data)
 
-def getMeasurementInterval(device):
-    data = _requestAndWait(device, chr(8))
+def getMeasurementInterval():
+    data = _requestAndWait(chr(8))
     return int(data)
 
-def getPingTimeout(device):
-    data = _requestAndWait(device, chr(9))
+def getPingTimeout():
+    data = _requestAndWait(chr(9))
     return int(data)
 
 # Queries the mode of communication between the buoy and the station
-def getMode(device):
-    state = _requestAndWait(device, chr(10))
-    print(f"state is {state}")
+def getMode():
+    state = _requestAndWait(chr(10))
     if state == '0':
         return "disconnected"
     elif state == '1':
@@ -60,3 +105,4 @@ def getMode(device):
         return "stream"
     else:
         return "unknown"
+
