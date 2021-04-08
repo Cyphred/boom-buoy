@@ -22,7 +22,7 @@ void setup() {
 	radio.startListening();
 
 	if (radio.isChipConnected())
-		tone(8, 2500, 1000);
+		tone(8, 2500, 500);
 	else {
 		while (true) {
 			tone(8, 500, 1000);
@@ -34,8 +34,7 @@ void setup() {
 void loop() {
 	if (getDataFromTransceiver()) {
 		int level = getReceived();
-		if (level > 300)
-			Serial.println(level);
+		Serial.println(level);
 	}
 }
 

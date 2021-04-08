@@ -7,7 +7,6 @@
 
 const byte slaveAddress[5] = {'R','x','A','A','A'};
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
-unsigned long lastReading;
 
 void setup() {
 	pinMode(8, OUTPUT);
@@ -17,7 +16,7 @@ void setup() {
 	radio.openWritingPipe(slaveAddress);
 
 	if (radio.isChipConnected())
-		tone(8, 2500, 1000);
+		tone(8, 2500, 500);
 	else {
 		while (true) {
 			tone(8, 500, 1000);
@@ -27,6 +26,8 @@ void setup() {
 	
 	pinMode(A0, INPUT);
 }
+
+unsigned long lastReading;
 
 void loop() {
 	if (isTimeForReading()) {
