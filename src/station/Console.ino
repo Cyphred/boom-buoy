@@ -8,29 +8,17 @@ void interpretConsoleCommand(byte command) {
 			break;
 		case (byte) CON_DISCONNECT:
 			break;
-		case (byte) CON_SET_VARIANCETHRESHOLD:
-			consoleSetVarianceThreshold();
-			break;
 		case (byte) CON_SET_MEASUREMENTINTERVAL:
 			consoleSetMeasurementInterval();
 			break;
 		case (byte) CON_SET_PINGTIMEOUT:
 			consoleSetPingTimeout();
 			break;
-		case (byte) CON_SET_MODE:
-			consoleSetMode();
-			break;
-		case (byte) CON_GET_VARIANCETHRESHOLD:
-			consoleGetVariancethreshold();
-			break;
 		case (byte) CON_GET_MEASUREMENTINTERVAL:
 			consoleGetMeasurementInterval();
 			break;
 		case (byte) CON_GET_PINGTIMEOUT:
 			consoleGetPingTimeout();
-			break;
-		case (byte) CON_GET_MODE:
-			consoleGetMode();
 			break;
 	}
 }
@@ -83,56 +71,57 @@ unsigned int receiveNewValue() {
 * Handles request for connection by a console application.
 */
 void consoleConnect() {
-	if (connectedToConsole) {
+	if (status.isConnectedToConsole) {
 		buzzer.genericError();
 		Serial.write(CON_REJECT);
 	}
 	else {
-		connectedToConsole = true;
+		status.isConnectedToConsole = true;
 		Serial.write(CON_ACCEPT);
 		buzzer.genericOK();
 	}
 }
 
-void consoleSetVarianceThreshold() {
-	unsigned int newValue = receiveNewValue();
-	if (newValue)
-		settings.varianceThreshold = newValue;
-}
-
+/**
+* Set the measurement interval setting using a value sent by the console.
+*/
 void consoleSetMeasurementInterval() {
 	unsigned int newValue = receiveNewValue();
 	if (newValue)
 		settings.measurementInterval = newValue;
 }
 
+/**
+* Set the ping timeout setting using a value sent by the console.
+*/
 void consoleSetPingTimeout() {
 	unsigned int newValue = receiveNewValue();
 	if (newValue)
 		settings.pingTimeout = newValue;
 }
 
-void consoleSetMode() {
-	unsigned int newValue = receiveNewValue();
-	if (newValue)
-		settings.mode = newValue;
-}
-
-void consoleGetVariancethreshold() {
-	Serial.print(settings.varianceThreshold);
-}
-
+/**
+* Prints the current measurement interval setting.
+*/
 void consoleGetMeasurementInterval() {
 	Serial.print(settings.measurementInterval);
 }
 
+/**
+* Prints the current ping timeout setting.
+*/
 void consoleGetPingTimeout() {
 	Serial.print(settings.pingTimeout);
 }
 
 /**
-* Query for state of connection.
+* Prints a data point's contents to serial.
+* This is for the console to be able to receive and log data points coming in from the buoy.
+*
+* @param packet is the packet whose contents will be dumped as a data point.
 */
-void consoleGetMode() {
-	Serial.print(settings.mode);
+void sendDataPointToConsole(Packet * packet) {
+	Serial.print(packet->getTimestamp());
+	Serial.print(",");
+	Serial.println(packet->getContent());
 }
