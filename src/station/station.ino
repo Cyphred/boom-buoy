@@ -50,8 +50,9 @@ struct Settings {
 
 void setup() {
 	Serial.begin(115200);
-	radio_initialize();
-	if (!status.radioInitialized)
+	if (radio_initialize())
+		status.radioInitialized = true;
+	else
 		radio_errorLoop();
 }
 
@@ -75,9 +76,3 @@ void loop() {
 	*/
 }
 
-void radio_errorLoop() {
-	while (true) {
-		buzzer.genericError();
-		delay(1000);
-	}
-}
