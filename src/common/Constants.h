@@ -30,6 +30,8 @@
 #define RESP_CONNECT_OK 16
 #define RESP_PING_OK 17
 
+#define RESP_DATA_POINT 18		// Identifier for a data point.
+
 // Warning Codes
 #define ILLEGAL_CONNECT 100
 #define ILLEGAL_HEADER 101
