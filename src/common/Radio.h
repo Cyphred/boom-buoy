@@ -12,13 +12,13 @@
 
 class Radio {
 	private:
-		RF24 rf;
+		RF24 m_radio;
 		byte txAddress[5];
 		byte rxAddress[5];
 		bool initialized;
 
 	public:
-		Radio(byte ce, byte csn, byte * rx, byte * tx);
+		Radio(int ce, int csn, byte * rx, byte * tx);
 		void storeReceivedDataIn(Packet * packet);
 		bool transmit(Packet * packet);
 		bool isInitialized();

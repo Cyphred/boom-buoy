@@ -18,50 +18,44 @@
 *   unique node address. See variable nodeAddr[] below.
 */
 
-#include "Constants.h" // Constants for command codes
-#include "ConsoleConstants.h" // Constants for console commands
 #include "Packet.h"
-#include "Radio.h"
 #include "Buzzer.h"
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
 #define CE_PIN   9
 #define CSN_PIN 10
-const byte rxAddress[5] = {'T','x','a','a','a'}; // Receive from this address
-const byte txAddress[5] = {'R','x','A','A','A'}; // Transmit to this address
-// Radio radio(CE_PIN, CSN_PIN, rxAddress, txAddress);
-Packet incoming;
-Packet outgoing;
+const byte address[5] = {'R','x','a','a','a'}; // Receive from this address
+RF24 radio(CE_PIN, CSN_PIN);
 Buzzer buzzer(8); // Initialize on D8.
-unsigned long lastPing;
-struct Settings {
-	unsigned int measurementInterval;	// Time in ms between each noise level measurement.
-	int varianceThreshold;			// The percentage of tolerable variance 
-	unsigned int pingTimeout;		// Time in ms before declaring TX as unresponsive.
-	byte mode;				// Operational mode
-} settings;
 
-bool connectedToConsole;
+Packet incoming;
+
+struct Status {
+	bool radioInitialized;
+} status;
 
 void setup() {
-	Serial.begin(9600);
-	// Check if the transceiver is NOT ready for use.
-	// If not ready, goes into an indefinite loop signalling a malfunction.
-	// if (!radio.isInitialized())
-	//	radioErrorLoop(); 
+	Serial.begin(115200);
+	Serial.print("Initializing radio...");	
+	// Check if transceiver is connected.
+	if (radio_initialize()) {
+		status.radioInitialized = true;
+		Serial.println("OK");
+	}
+	else {
+		Serial.println("ERROR");
+		radio_errorLoop();
+	}
+
+	Serial.println("Waiting for data stream...");
 }
 
 void loop() {
-	if (Serial.available()) {
-		interpretConsoleCommand(Serial.read());
+	if (radio.available()) {
+		radio.read(incoming.data, sizeof(incoming.data)); // Read data from rf buffer and store it into packet's array.
+		Serial.println(incoming.getContent());
 	}
 }
 
-/**
-* Infinite loop for indicating an error with initializing the transceiver.
-*/
-void radioErrorLoop() {
-	while (true) {
-		buzzer.radioError();
-		delay(2000);
-	}
-}
