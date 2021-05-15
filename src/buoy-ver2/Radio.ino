@@ -1,3 +1,6 @@
+#define RADIO_DELAY 3		// Delay between each transmission attempt.
+#define RADIO_MAX_RETRIES 5	// Maximum number of retries before connection time out.
+
 /**
 * Attempt initializing the radio transceiver.
 *
@@ -7,8 +10,8 @@ bool radio_initialize() {
 	radio.begin();
 	if (radio.isChipConnected()) {
 		radio.setDataRate(RF24_250KBPS);
-		radio.openReadingPipe(1, address);
-		radio.startListening();
+		radio.setRetries(RADIO_DELAY, RADIO_MAX_RETRIES);
+		radio.openWritingPipe(stationAddress);
 		return true;
 	}
 	else
@@ -26,10 +29,8 @@ void radio_errorLoop() {
 }
 
 /**
-* Fetches the data from the receive buffer of the transceiver and stores it.
-*
-* @param *packet is the pointer to the packet where the received data will be written to.
+* Sends a packet to the station.
 */
-void radio_storeReceivedDataIn(Packet * packet) {
-	radio.read(&packet->data, sizeof(packet->data)); // Read data from rf buffer and store it into packet's array.
+bool radio_send(Packet * packet) {
+	return radio.write(&packet->data, sizeof(&packet->data));
 }

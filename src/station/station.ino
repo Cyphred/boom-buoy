@@ -48,6 +48,8 @@ void setup() {
 		Serial.println("ERROR");
 		radio_errorLoop();
 	}
+
+	Serial.println("Waiting for data stream...");
 }
 
 void loop() {
