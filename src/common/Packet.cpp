@@ -21,10 +21,10 @@ void Packet::setHeader(byte value) {
 
 /**
 * Gets the content from the packet data.
-* This combines the last 2 bytes in the packet into an unsigned int.
+* This combines 2 bytes in the packet into an unsigned int.
 *
 * @return is the unsigned integer resulting from the combination of the
-* last 2 bytes of packet.
+* 2 bytes in the content region of the packet.
 */
 unsigned int Packet::getContent() {
 	return (unsigned int) (data[2]<<8) | (data[1]);
@@ -41,10 +41,35 @@ void Packet::setContent(unsigned int num) {
 }
 
 /**
+ * Gets the timestamp from the packet data.
+ * This combines 4 bytes in the packet into an unsigned long.
+ *
+ * @return is the unsigned long resulting from the combination of the
+ * 4 bytes in the timestamp region of the packet.
+ */
+unsigned long Packet::getTimestamp() {
+	return (unsigned int) (data[6]<<24) | (data[5]<<16) | (data[4]<<8) | (data[3]);
+}
+
+/**
+* Splits an unsigned long into four bytes and stores them in the
+* timestamp region of the packet data.
+*
+* @param num is the unsigned long to be stored as the timestamp.
+*/
+void Packet::setTimestamp(unsigned long timeStamp) {
+	data[3] = (byte) (timeStamp & 0xFF);
+	data[4] = (byte) ((timeStamp >> 8) & 0xFF);
+	data[5] = (byte) ((timeStamp >> 16) & 0xFF);
+	data[6] = (byte) ((timeStamp >> 24) & 0xFF);
+}
+
+/**
  * Resets all the bytes in the packet.
  */
 void Packet::reset() {
-	data[0] = data[1] = data[2] = 0;
+	for (int x = 0; x < 7; x++ )
+		data[x] = 0;
 }
 
 /**
