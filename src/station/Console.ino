@@ -8,6 +8,9 @@ void interpretConsoleCommand(byte command) {
 			break;
 		case (byte) CON_DISCONNECT:
 			break;
+		case (byte) CON_CHECK_CONNECTION:
+			testConnectionWithBuoy();
+			break;
 		case (byte) CON_SET_MEASUREMENTINTERVAL:
 			consoleSetMeasurementInterval();
 			break;
@@ -124,4 +127,13 @@ void sendDataPointToConsole(Packet * packet) {
 	Serial.print(packet->getTimestamp());
 	Serial.print(",");
 	Serial.println(packet->getContent());
+}
+
+void testConnectionWithBuoy() {
+	outgoing.reset();
+	outgoing.setHeader(QUERY_PING);
+	if (radio_transmit(&outgoing))
+		Serial.write(CON_ACCEPT);
+	else
+		Serial.write(CON_REJECT);
 }
