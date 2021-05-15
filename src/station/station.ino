@@ -63,16 +63,14 @@ void loop() {
 	if (!status.isConnectedToBuoy)
 		return;
 
-	/*
-	if (!radio.isDataAvailable())
+	if (!radio.available())
 		return;
 	
-	radio.storeReceivedDataIn(&incoming);
+	radio_storeReceivedDataIn(&incoming);
 	switch (incoming.getHeader()) {
 		case RESP_DATA_POINT:
 			sendDataPointToConsole(&incoming);
 			break;
 	}
-	*/
 }
 
