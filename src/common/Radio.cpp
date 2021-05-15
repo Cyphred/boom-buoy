@@ -8,7 +8,8 @@
  * @param rxAddress is the array of bytes containing the receive address for incoming data.
  * @param txAddress is the array of bytes containing the transmit address for outgoing data.
  */
-Radio::Radio(int ce, int csn, byte * rx, byte * tx) : m_radio(ce, csn) {
+Radio::Radio(int ce, int csn, byte * rx, byte * tx) {
+	RF24 m_radio(ce, csn);
 	// Addresses should always be 5 bytes in length.
 	for (byte i = 0; i < 5 ; i++ ) {
 		rxAddress[i] = rx[i];

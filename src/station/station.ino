@@ -21,14 +21,16 @@
 #include "Constants.h" // Constants for command codes
 #include "ConsoleConstants.h" // Constants for console commands
 #include "Packet.h"
-#include "Radio.h"
 #include "Buzzer.h"
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
 #define CE_PIN   9
 #define CSN_PIN 10
 const byte rxAddress[5] = {'T','x','a','a','a'}; // Receive from this address
 const byte txAddress[5] = {'R','x','A','A','A'}; // Transmit to this address
-Radio radio(CE_PIN, CSN_PIN, rxAddress, txAddress);
+RF24 radio(CE_PIN, CSN_PIN);
 Buzzer buzzer(8); // Initialize on D8.
 
 Packet incoming;
@@ -38,6 +40,7 @@ struct Status {
 	unsigned long lastPing;
 	bool isConnectedToConsole;
 	bool isConnectedToBuoy;
+	bool radioInitialized;
 } status;
 
 struct Settings {
@@ -47,18 +50,9 @@ struct Settings {
 
 void setup() {
 	Serial.begin(115200);
-	Serial.println("Initializing radio...");
-	if (! radio.isInitialized()) {
-		buzzer.genericError();
-		Serial.println("Radio ERROR");
-		while (true) {
-			;
-		}
-	}
-	else {
-		Serial.println("Radio OK");
-		buzzer.genericOK();
-	}
+	radio_initialize();
+	if (!status.radioInitialized)
+		radio_errorLoop();
 }
 
 void loop() {
@@ -68,6 +62,7 @@ void loop() {
 	if (!status.isConnectedToBuoy)
 		return;
 
+	/*
 	if (!radio.isDataAvailable())
 		return;
 	
@@ -76,5 +71,13 @@ void loop() {
 		case RESP_DATA_POINT:
 			sendDataPointToConsole(&incoming);
 			break;
+	}
+	*/
+}
+
+void radio_errorLoop() {
+	while (true) {
+		buzzer.genericError();
+		delay(1000);
 	}
 }
