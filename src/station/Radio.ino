@@ -10,9 +10,7 @@ bool radio_initialize() {
 	radio.begin();
 	if (radio.isChipConnected()) {
 		radio.setDataRate(RF24_250KBPS);
-		radio.openWritingPipe(txAddress);
-		radio.openReadingPipe(1, rxAddress);
-		radio.setRetries(RADIO_DELAY, RADIO_MAX_RETRIES);
+		radio.openReadingPipe(1, address);
 		radio.startListening();
 		return true;
 	}
@@ -37,19 +35,4 @@ void radio_errorLoop() {
 */
 void radio_storeReceivedDataIn(Packet * packet) {
 	radio.read(&packet->data, sizeof(packet->data)); // Read data from rf buffer and store it into packet's array.
-}
-
-/**
- * Transmits data to the TX address.
- *
- * @param *packet is the pointer to the packet where the received data will be written to.
- * @return true if an acknowledgement has been received.
- */
-bool radio_transmit(Packet * packet) {
-	radio.stopListening();
-	bool acknowledged = radio.write(&packet->data, sizeof(packet->data));
-	radio.startListening();
-	if (acknowledged);
-		return true;
-	return false;
 }
