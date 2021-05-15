@@ -28,40 +28,53 @@
 #define CSN_PIN 10
 const byte rxAddress[5] = {'T','x','a','a','a'}; // Receive from this address
 const byte txAddress[5] = {'R','x','A','A','A'}; // Transmit to this address
-// Radio radio(CE_PIN, CSN_PIN, rxAddress, txAddress);
+Radio radio(CE_PIN, CSN_PIN, rxAddress, txAddress);
+Buzzer buzzer(8); // Initialize on D8.
+
 Packet incoming;
 Packet outgoing;
-Buzzer buzzer(8); // Initialize on D8.
-unsigned long lastPing;
+
+struct Status {
+	unsigned long lastPing;
+	bool isConnectedToConsole;
+	bool isConnectedToBuoy;
+} status;
+
 struct Settings {
-	unsigned int measurementInterval;	// Time in ms between each noise level measurement.
-	int varianceThreshold;			// The percentage of tolerable variance 
-	unsigned int pingTimeout;		// Time in ms before declaring TX as unresponsive.
-	byte mode;				// Operational mode
+	unsigned int measurementInterval;
+	unsigned int pingTimeout;
 } settings;
 
-bool connectedToConsole;
-
 void setup() {
-	Serial.begin(9600);
-	// Check if the transceiver is NOT ready for use.
-	// If not ready, goes into an indefinite loop signalling a malfunction.
-	// if (!radio.isInitialized())
-	//	radioErrorLoop(); 
-}
-
-void loop() {
-	if (Serial.available()) {
-		interpretConsoleCommand(Serial.read());
+	Serial.begin(115200);
+	Serial.println("Initializing radio...");
+	if (! radio.isInitialized()) {
+		buzzer.genericError();
+		Serial.println("Radio ERROR");
+		while (true) {
+			;
+		}
+	}
+	else {
+		Serial.println("Radio OK");
+		buzzer.genericOK();
 	}
 }
 
-/**
-* Infinite loop for indicating an error with initializing the transceiver.
-*/
-void radioErrorLoop() {
-	while (true) {
-		buzzer.radioError();
-		delay(2000);
+void loop() {
+	if (Serial.available())
+		interpretConsoleCommand(Serial.read()); // Read the incoming command for interpretation.
+	
+	if (!status.isConnectedToBuoy)
+		return;
+
+	if (!radio.isDataAvailable())
+		return;
+	
+	radio.storeReceivedDataIn(&incoming);
+	switch (incoming.getHeader()) {
+		case RESP_DATA_POINT:
+			sendDataPointToConsole(&incoming);
+			break;
 	}
 }
