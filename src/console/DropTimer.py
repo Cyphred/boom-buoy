@@ -14,7 +14,7 @@ while True:
         print(points)
         input("Press enter to record current time.")
         counter+=1
-        points.append([counter,time.time()])
+        points.append([time.time(),counter])
 
     except:
         print("\nKeyboard Interrupt")
