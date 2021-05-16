@@ -1,11 +1,11 @@
 import sys
 from Setup import *
 from Device import *
-from Settings import *
-from StationCommands import *
+import time
+import csv
 
-device = None
-settings = None
+station = None
+data = []
 
 def main():
     clear()
@@ -15,26 +15,64 @@ def main():
     print("Version 1.0\n")
 
     # Verifies that a parameter has been passed
-    if len(sys.argv) == 1:
-        print("ERROR: No device specified. Aborting...")
+    if len(sys.argv) != 3:
+        print("ERROR: Not enough arguments.")
         quit()
 
     if not devicePathExists(sys.argv[1]):
         exit()
 
     if not devicePathIsCOM(sys.argv[1]):
-        exit();
-
-    # Create instance of device
-    print(f"Attempting connection with {sys.argv[1]}...")
-    device = Device(sys.argv[1], 9600) # Creates the device
-    if not authenticateWithDevice(device, 3000):
         exit()
 
-    # Initialize device settings
-    settings = Settings('settings.json')
+    if not connectDevice():
+        exit()
 
-    device.device.close()
+    while True:
+        try:
+            bytes = station.device.readline();
+            timestamp = time.time()
+            if bytes:
+                decoded = bytes.decode()
+                decoded = decoded.rstrip(decoded[-1])
+
+                # If the sent line starts with a number
+                if bytes[0] >= 48 and bytes[0] <= 57:
+                    global data
+                    data.append([timestamp,int(decoded)])
+                    print(f"{timestamp},{decoded}")
+
+                else:
+                    print(decoded)
+        except:
+            print("Keyboard Interrupt")
+            break
+
+    saveData()
+    station.device.close()
+
+def saveData():
+    print(f"Saving data to {sys.argv[2]}...")
+    fields = ['Timestamp', 'Noise Level']
+    with open(sys.argv[2], 'w') as f:
+        write = csv.writer(f)
+        write.writerow(fields)
+        global data
+        write.writerows(data)
+        totalTime = data[len(data)-1][0] - data[0][0]
+        print(f"Saved {len(data)} data points spanning {totalTime} seconds.")
+
+def connectDevice():
+    print(f"Attempting connection with {sys.argv[1]}...", end="")
+    global station
+    station = Device(sys.argv[1], 115200) # Creates the device
+    if station:
+        print("OK")
+        return True
+    else:
+        print("ERROR")
+        return False
+
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')

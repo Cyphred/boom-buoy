@@ -1,1 +1,0 @@
-{"buoy_settings": {"mode": "monitor", "ping_timeout": 6000, "variance_threshold": 50, "measurement_interval": 10}, "console_settings": {"baud_rate": 9600}}
