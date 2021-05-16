@@ -8,6 +8,7 @@ class Device:
         self.devicePath = devicePath
         self.baudRate = baudRate
         self.device = serial.Serial(port=devicePath, baudrate=baudRate, timeout=.1)
+        #self.device.flushInput()
 
     # Writes data over serial
     def write(self, data):

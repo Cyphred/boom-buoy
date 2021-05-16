@@ -1,11 +1,10 @@
 import sys
 from Setup import *
 from Device import *
-from Settings import *
-from StationCommands import *
+import time
+import csv
 
-device = None
-settings = None
+station = None
 
 def main():
     clear()
@@ -23,18 +22,36 @@ def main():
         exit()
 
     if not devicePathIsCOM(sys.argv[1]):
-        exit();
-
-    # Create instance of device
-    print(f"Attempting connection with {sys.argv[1]}...")
-    device = Device(sys.argv[1], 9600) # Creates the device
-    if not authenticateWithDevice(device, 3000):
         exit()
 
-    # Initialize device settings
-    settings = Settings('settings.json')
+    if not connectDevice():
+        exit()
 
-    device.device.close()
+    while True:
+        bytes = station.device.readline();
+        timestamp = time.time()
+        if bytes:
+            decoded = bytes.decode()
+
+            # If the sent line starts with a number
+            if bytes[0] >= 48 and bytes[0] <= 57:
+                decoded = str(timestamp) + "," + decoded
+
+            print(decoded)
+
+    station.device.close()
+
+def connectDevice():
+    print(f"Attempting connection with {sys.argv[1]}...", end="")
+    global station
+    station = Device(sys.argv[1], 115200) # Creates the device
+    if station:
+        print("OK")
+        return True
+    else:
+        print("ERROR")
+        return False
+
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')

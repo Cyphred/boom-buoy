@@ -1,6 +1,5 @@
 import os.path
 import serial.tools.list_ports
-import Device
 import time
 
 # Checks if the device path exists
@@ -25,38 +24,3 @@ def devicePathIsCOM(devicePath):
         print("FAILED")
         print(f"\nERROR: \"{devicePath}\" is not a valid COM device.")
         return False
-
-# Sends a magic byte to the device and checks if it sends
-# the appropriate response.
-def authenticateWithDevice(device, timeout):
-    print("Authenticating...", end="")
-
-    reply = None
-    timeout /= 1000
-    start = time.time()
-
-    # Send connection requests to device until a response is received,
-    # or until the allowed time expires.
-    while not reply and (time.time() - start) < timeout:
-        device.write(chr(1))
-        reply = device.read()
-
-    # reply is empty if no response has been received
-    if not reply:
-        print("FAILED")
-        print("ERROR: Device took to long to respond.")
-        return False
-
-    # print(f"reply is {reply}")
-    # if the magic byte is received
-    if reply == chr(100):
-        print("OK")
-        return True
-    elif reply == chr(101):
-        print("FAILED")
-        print(f"ERROR: Device rejected connection. Another instance of the console might be running?")
-    else:
-        print("FAILED")
-        print(f"ERROR: Device sent an invalid response. Are you sure you selected the correct device?")
-
-    return False
