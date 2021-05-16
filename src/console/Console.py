@@ -28,16 +28,24 @@ def main():
         exit()
 
     while True:
-        bytes = station.device.readline();
-        timestamp = time.time()
-        if bytes:
-            decoded = bytes.decode()
+        try:
+            bytes = station.device.readline();
+            timestamp = time.time()
+            if bytes:
+                decoded = bytes.decode()
+                decoded = decoded.rstrip(decoded[-1])
 
-            # If the sent line starts with a number
-            if bytes[0] >= 48 and bytes[0] <= 57:
-                decoded = str(timestamp) + "," + decoded
+                # If the sent line starts with a number
+                if bytes[0] >= 48 and bytes[0] <= 57:
+                    decoded = str(timestamp) + "," + decoded
+                    with open("/mnt/data/test_data.csv","a") as f:
+                        writer = csv.writer(f,delimiter=",")
+                        writer.writerow([decoded])
 
-            print(decoded)
+                print(decoded)
+        except:
+            print("Keyboard Interrupt")
+            break
 
     station.device.close()
 
