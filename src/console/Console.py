@@ -3,12 +3,9 @@ from Setup import *
 from Device import *
 import time
 import csv
-from datetime import datetime
 
 station = None
 data = []
-fileTimestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
-filePath = "/mnt/data/buoy-data/test_data-" + fileTimestamp + ".csv"
 
 def main():
     clear()
@@ -18,8 +15,8 @@ def main():
     print("Version 1.0\n")
 
     # Verifies that a parameter has been passed
-    if len(sys.argv) == 1:
-        print("ERROR: No device specified. Aborting...")
+    if len(sys.argv) != 3:
+        print("ERROR: Not enough arguments.")
         quit()
 
     if not devicePathExists(sys.argv[1]):
@@ -55,10 +52,9 @@ def main():
     station.device.close()
 
 def saveData():
-    global filePath
-    print(f"Saving data to {filePath}...")
+    print(f"Saving data to {sys.argv[2]}...")
     fields = ['Timestamp', 'Noise Level']
-    with open(filePath, 'w') as f:
+    with open(sys.argv[2], 'w') as f:
         write = csv.writer(f)
         write.writerow(fields)
         global data
