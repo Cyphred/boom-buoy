@@ -3,8 +3,12 @@ from Setup import *
 from Device import *
 import time
 import csv
+from datetime import datetime
 
 station = None
+data = []
+fileTimestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+filePath = "/mnt/data/buoy-data/test_data-" + fileTimestamp + ".csv"
 
 def main():
     clear()
@@ -37,17 +41,30 @@ def main():
 
                 # If the sent line starts with a number
                 if bytes[0] >= 48 and bytes[0] <= 57:
-                    decoded = str(timestamp) + "," + decoded
-                    with open("/mnt/data/test_data.csv","a") as f:
-                        writer = csv.writer(f,delimiter=",")
-                        writer.writerow([decoded])
+                    global data
+                    data.append([timestamp,int(decoded)])
+                    print(f"{timestamp},{decoded}")
 
-                print(decoded)
+                else:
+                    print(decoded)
         except:
             print("Keyboard Interrupt")
             break
 
+    saveData()
     station.device.close()
+
+def saveData():
+    global filePath
+    print(f"Saving data to {filePath}...")
+    fields = ['Timestamp', 'Noise Level']
+    with open(filePath, 'w') as f:
+        write = csv.writer(f)
+        write.writerow(fields)
+        global data
+        write.writerows(data)
+        totalTime = data[len(data)-1][0] - data[0][0]
+        print(f"Saved {len(data)} data points spanning {totalTime} seconds.")
 
 def connectDevice():
     print(f"Attempting connection with {sys.argv[1]}...", end="")
