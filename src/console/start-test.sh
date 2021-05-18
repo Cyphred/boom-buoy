@@ -6,7 +6,10 @@ timestamp=$(date +%Y-%m-%d-%H%M%S)
 # $1 is the device that will be passed as a parameter to Console.py
 # This should be the station.
 [ -z $1 ] && echo "[ERROR] Device not specified." && exit 1
-ls $1 && echo "\'$1\' is not a valid device." && exit 1
+if ! ls $1; then
+	echo "'$1' is not a valid device."
+	exit 1
+fi
 
 # Check if the data directory exists
 if [ ! -d "$log_location" ]; then

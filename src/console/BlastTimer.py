@@ -43,6 +43,8 @@ def main():
 
             break
 
+    input("Program complete. Press enter to quit.")
+
 def addPoint():
     global counter
     counter += 1

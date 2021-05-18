@@ -54,17 +54,15 @@ for row in raw_noise_data:
 print("Trimming datapoints earlier than the start point...")
 
 # Trim all data points with a negative timestamp in noise data
-raw_noise_data = list(filter((0).__le__, raw_noise_data))
-
-print("Preparing data for saving...")
+# Uses first column to identify it as noise data
 processed_data = []
-
-# Store blast time data first, with the first column as an identifier
-for row in raw_blast_time:
-    processed_data.append([0,row[0],row[1]])
-
-# Store noise data next, with the first column as an identifier, as well
 for row in raw_noise_data:
+    if row[0] >= 0:
+        processed_noise_data.append([0,row[0],row[1]])
+
+# Store blast time data
+# Uses second column to identify it as blast time data
+for row in raw_blast_time:
     processed_data.append([1,row[0],row[1]])
 
 saveData(processed_data, outputFile)
