@@ -53,11 +53,5 @@ done
 # Process the logged data
 python Process.py "$log_location/$timestamp/raw-noise-$timestamp.csv" "$log_location/$timestamp/raw-blast-$timestamp.csv" "$log_location/$timestamp/processed-$timestamp.csv"
 
-# Plot the processed data
-while true; do
-	printf "Deviation set size: "
-	read dss
-	printf "Difference threshold: "
-	read dt
-	python Plot.py "$log_location/$timestamp/processed-$timestamp.csv" $dss $dt
-done
+# Plot the data
+python Plot.py "$log_location/$timestamp/processed-$timestamp.csv"
