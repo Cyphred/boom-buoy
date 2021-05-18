@@ -4,13 +4,17 @@ import csv
 import sys
 import os.path
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 4:
     print("ERROR: Not enough arguments.")
 
 noiseLevel = []
 noiseTime = []
 dataFile = sys.argv[1]
 graphTitle = sys.argv[1]
+
+# Settings
+deviationSetSize = int(sys.argv[2])
+diffThreshold = int(sys.argv[3])
 
 # Check if save path exists
 if not os.path.exists(sys.argv[1]):
@@ -43,16 +47,25 @@ temp_deviation = []
 
 for i in range(len(noiseLevel)):
     temp_deviation.append(noiseLevel[i])
-    if len(temp_deviation) == 10:
-        deviation.append(sum(temp_deviation) / 10)
+    if len(temp_deviation) == deviationSetSize:
+        deviation.append(sum(temp_deviation) / deviationSetSize)
         temp_deviation = []
         deviationTime.append(noiseTime[i])
 
 # Plot standard deviation
-plt.plot(deviationTime, deviation, color="blue")
+plt.plot(deviationTime, deviation, color="blue", linewidth="0.8")
+
+# Traverse through each standard deviation and check its neighbors for potential spikes
+spikes = []
+for i in range(2, len(deviation)):
+    ave = (deviation[i-2] + deviation[i-1]) / 2
+    diff = deviation[i] - ave
+    diff = (diff / ave) * 100
+    if diff > diffThreshold:
+        plt.axvline(x=deviationTime[i], color="green", linewidth="1", linestyle="dashed")
 
 # Plot line for actual blast time
-plt.axvline(x=0,color="red")
+plt.axvline(x=0, color="red", linewidth="1")
 
 plt.xlabel("Time in seconds relative to blast")
 plt.ylabel("Noise Level")
