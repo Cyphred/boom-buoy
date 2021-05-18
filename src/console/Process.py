@@ -36,35 +36,25 @@ with open(pathToRawBlastTimeData,'r') as data:
 
 print(f"Done. Loaded {len(raw_blast_time)} data points.")
 
-print("Adjusting timestamps...")
-
-# Save and remove the first and last blast time data points, because their only purpose is to act as markers for the start and end points.
+# Take note of data start and end times, as well as acutal blast time
 startTime = raw_blast_time[0][0]
-endTime = raw_blast_time[len(raw_blast_time) - 1][0]
-raw_blast_time = raw_blast_time[1:-1] 
+acutal_blast_time = raw_blast_time[1][0]
+endTime = raw_blast_time[2][0]
 
-# Adjust timestamps relative to start time
-for row in raw_blast_time:
-    row[0] = row[0] - startTime
+print("Trimming datapoints out of range...")
 
-for row in raw_noise_data:
-    row[0] = row[0] - startTime
-
-print("Trimming datapoints earlier than the start point...")
-
-# Trim all data points with a negative timestamp in noise data
-# Uses first column to identify it as noise data
+# Exclude all data points outside the range of the start and end times
 processed_data = []
 for row in raw_noise_data:
-    if row[0] >= 0 and row[0] <= endTime:
+    if row[0] >= startTime and row[0] <= endTime:
         row[0] = round(row[0],4)
-        processed_data.append([0,row[0],row[1]])
+        processed_data.append([row[0],row[1]])
 
-# Store blast time data
-# Uses second column to identify it as blast time data
-for row in raw_blast_time:
-    row[0] = round(row[0],4)
-    processed_data.append([1,row[0],row[1]])
+print("Adjusting timestamps...")
+
+# Adjust timestamps relative to actual blast time
+for row in processed_data:
+    row[0] = row[0] - acutal_blast_time
 
 saveData(processed_data, outputFile)
 

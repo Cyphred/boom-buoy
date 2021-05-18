@@ -15,33 +15,31 @@ def main():
     print("[ Blast Time Logger ]")
     print("Version 1.0\n")
 
-    input("Press enter to start logging blast time data.")
-    addPoint()
+    try:
+        input("Press enter to start logging blast time data.")
+        addPoint()
 
-    while True:
-        try:
-            clear()
-            print(f"{len(data)} points recorded so far.")
-            input("Press enter to record current time.")
-            addPoint()
+        input("Press enter to record blast time.")
+        addPoint()
 
-        except:
-            clear()
-            end = getTimestamp()
-            #print(e)
-            print("Interrupt received.")
-            print("[ LOGGING SUMMARY ]")
-            print(f"- Data Points: {counter}")
+        input("Press enter to stop logging blast time data.")
+        addPoint()
+    except:
+        print("Interrupt received")
 
-            if len(data) > 0:
-                duration = end - data[0][0]
-                duration = round(duration, 3)
-                print(f"- Duration: {duration}s")
-                saveData(data, sys.argv[1])
-            else:
-                print("No data to save.")
+    print("[ LOGGING SUMMARY ]")
 
-            break
+    if len(data) > 0:
+        duration = data[2][0] - data[0][0]
+        duration = round(duration, 4)
+        print(f"- Duration: {duration}s")
+
+        blastTime = data[1][0] - data[0][0]
+        blastTime = round(blastTime, 4)
+        print(f"- Blast: {blastTime}")
+        saveData(data, sys.argv[1])
+    else:
+        print("No data to save.")
 
     input("Program complete. Press enter to quit.")
 
