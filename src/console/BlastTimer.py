@@ -1,58 +1,52 @@
 import sys
-import csv
-import time
+from Common import *
 
-points = []
+data = []
 counter = 0
 
 def main():
+    if not hasEnoughParameters(sys.argv,1):
+        print("Usage: BlastTimer.py <save data path>")
+        exit()
+
     # Splash info
     clear()
     print("Arduino-based Dynamite Fishing Monitoring System")
     print("[ Blast Time Logger ]")
     print("Version 1.0\n")
 
-    if len(sys.argv) != 2:
-        print("ERROR: Not enough arguments.")
-        quit()
+    try:
+        input("Press enter to start logging blast time data.")
+        addPoint()
 
-    input("Press enter to start logging blast time data.\nNOTE:This will also count as the official start of data logging. Noise level data taken before pressing enter will be pruned upon processing.")
-    addPoint()
+        input("Press enter to record blast time.")
+        addPoint()
 
-    while True:
-        try:
-            print(f"{points} points recorded.")
-            input("Press enter to record current time.")
-            addPoint()
+        input("Press enter to stop logging blast time data.")
+        addPoint()
+    except:
+        print("Interrupt received")
 
-        except:
-            print("\nKeyboard Interrupt")
-            roundTimestamps()
-            saveData()
-            break
+    print("[ LOGGING SUMMARY ]")
 
-# Adds a data point
+    if len(data) > 0:
+        duration = data[2][0] - data[0][0]
+        duration = round(duration, 4)
+        print(f"- Duration: {duration}s")
+
+        blastTime = data[1][0] - data[0][0]
+        blastTime = round(blastTime, 4)
+        print(f"- Blast: {blastTime}")
+        saveData(data, sys.argv[1])
+    else:
+        print("No data to save.")
+
+    input("Program complete. Press enter to quit.")
+
 def addPoint():
-    global points
     global counter
-    timestamp = time.time()
-    counter+=1
-    points.append([timestamp,counter])
-
-# Saves data to file
-def saveData():
-    global points
-    print(f"Saving data to {sys.argv[1]}...")
-    with open(sys.argv[1], 'w') as f:
-        write = csv.writer(f)
-        write.writerows(points)
-        print(f"Saved {len(points)} data points.")
-
-def roundTimestamps():
-    print("Rounding timestamps to 3 decimal places...")
-    global points
-    for p in points:
-        p[0] = round(p[0], 3)
+    counter += 1
+    data.append([getTimestamp(),counter])
 
 if __name__ == "__main__":
     main()

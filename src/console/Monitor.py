@@ -2,21 +2,24 @@ import sys
 from Common import *
 from Device import *
 import serial.tools.list_ports
-import os.path
+import os
 
 station = None
 data = []
 
 def main():
     if not hasEnoughParameters(sys.argv,2):
-        print("Usage: Console.py <device path> <save data path>")
+        print("Usage: Monitor.py <device path> <save data path>")
         exit()
 
     # Splash info
     clear()
     print("Arduino-based Dynamite Fishing Monitoring System")
-    print("[ Noise Data Logger ]")
+    print("[ Monitor Mode ]")
     print("Version 1.0\n")
+
+    variance_threshold = int(input("Variance threshold %: "))
+    mean_offset = int(input("Mean offset: "))
 
     if not devicePathExists(sys.argv[1]):
         exit()
@@ -40,15 +43,23 @@ def main():
                 if bytes[0] >= 48 and bytes[0] <= 57:
                     decoded = int(decoded)
                     data.append([timestamp,decoded])
-                    print(f"{data[len(data)-1]}")
+                    print(f"{data[-1:]}")
+
+                    computed_mean = getMean(data[-mean_offset:])
+                    computed_variance = getVariance(data[-1:], computed_mean)
+                    if computed_variance > variance_threshold:
+                        alarm_command = "notify-send 'Possible Blast Detected' 'Alarm triggered with " + str(round(computed_variance,2)) + "% variance.'"
+                        print(alarm_command)
+                        os.system(alarm_command)
 
                 # If the sent line is just text, just print it out.
                 else:
                     print(decoded)
 
         except:
-            print("============================================================")
+        #except Exception as e:
             #print(e)
+            print("============================================================")
             print("Interrupt received.")
             print("[ LOGGING SUMMARY ]")
             print(f"- Data Points: {len(data)}")
@@ -103,6 +114,18 @@ def disconnectDevice():
     print("Disconnecting device...",end="")
     station.device.close()
     print("OK")
+
+def getMean(subdata):
+    mean = 0
+    for point in subdata:
+        mean += point[1]
+    mean /= len(subdata)
+    return mean
+
+def getVariance(latestPoint, mean):
+    latestPoint = latestPoint[0][1]
+    variance = ((latestPoint - mean) / mean) * 100
+    return variance
 
 if __name__ == "__main__":
     main()
