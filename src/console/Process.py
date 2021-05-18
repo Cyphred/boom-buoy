@@ -38,18 +38,17 @@ print(f"Done. Loaded {len(raw_blast_time)} data points.")
 
 print("Adjusting timestamps...")
 
-# Save and remove the first blast time data point, because its only purpose is a marker for the start point.
+# Save and remove the first and last blast time data points, because their only purpose is to act as markers for the start and end points.
 startTime = raw_blast_time[0][0]
-raw_blast_time = raw_blast_time[1:] 
+endTime = raw_blast_time[len(raw_blast_time) - 1][0]
+raw_blast_time = raw_blast_time[1:-1] 
 
 # Adjust timestamps relative to start time
 for row in raw_blast_time:
-    row[0] = round(row[0], 4)
     row[0] = row[0] - startTime
 
 for row in raw_noise_data:
     row[0] = row[0] - startTime
-    row[0] = round(row[0], 4)
 
 print("Trimming datapoints earlier than the start point...")
 
@@ -57,12 +56,14 @@ print("Trimming datapoints earlier than the start point...")
 # Uses first column to identify it as noise data
 processed_data = []
 for row in raw_noise_data:
-    if row[0] >= 0:
-        processed_noise_data.append([0,row[0],row[1]])
+    if row[0] >= 0 and row[0] <= endTime:
+        row[0] = round(row[0],4)
+        processed_data.append([0,row[0],row[1]])
 
 # Store blast time data
 # Uses second column to identify it as blast time data
 for row in raw_blast_time:
+    row[0] = round(row[0],4)
     processed_data.append([1,row[0],row[1]])
 
 saveData(processed_data, outputFile)
