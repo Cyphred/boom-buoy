@@ -54,4 +54,9 @@ done
 python Process.py "$log_location/$timestamp/raw-noise-$timestamp.csv" "$log_location/$timestamp/raw-blast-$timestamp.csv" "$log_location/$timestamp/processed-$timestamp.csv"
 
 # Plot the data
-python Plot.py "$log_location/$timestamp/processed-$timestamp.csv"
+while true; do
+	printf "Variance threshold: "
+	read vt
+	[ -z "$vt" ] && vt=15
+	python Plot.py "$log_location/$timestamp/processed-$timestamp.csv" $vt
+done

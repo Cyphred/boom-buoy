@@ -35,7 +35,7 @@ def mean(data, offset):
     return mean
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print("ERROR: Not enough arguments.")
 
     data_noise = []
@@ -68,10 +68,13 @@ def main():
     data_mean = mean(data_noise, 10)
 
     # Detect potential blasts
+    variance_threshold = 10
+    if len(sys.argv) > 2:
+        variance_threshold = int(sys.argv[2])
     for i in range(len(data_noise)):
         variance = ((data_noise[i][1] - data_mean[i][1]) / data_mean[i][1]) * 100
-        if variance >= 10:
-            plt.axvline(x=data_noise[i][0], color="#baf72c", linewidth="1", linestyle="dotted")
+        if variance >= variance_threshold:
+            plt.axvline(x=data_noise[i][0], color="#f72cba", linewidth="1", linestyle="dotted")
 
     # Plot raw noise data
     x,y = map(list, zip(*data_noise))
