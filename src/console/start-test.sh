@@ -55,7 +55,7 @@ python Process.py "$log_location/$timestamp/raw-noise-$timestamp.csv" "$log_loca
 
 # Plot the data
 while true; do
-	printf "Variance threshold: "
+	printf "Variance threshold (default 15): "
 	read vt
 	[ -z "$vt" ] && vt=15
 	python Plot.py "$log_location/$timestamp/processed-$timestamp.csv" $vt
