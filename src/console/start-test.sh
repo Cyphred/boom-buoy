@@ -53,8 +53,5 @@ done
 # Process the logged data
 python Process.py "$log_location/$timestamp/raw-noise-$timestamp.csv" "$log_location/$timestamp/raw-blast-$timestamp.csv" "$log_location/$timestamp/processed-$timestamp.csv"
 
-echo "Time to plot..."
-exit
-
 # Plot the processed data
 python Plot.py "$log_location/$timestamp/"
