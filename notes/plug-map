@@ -1,0 +1,16 @@
+MA1 - Charger + OUT
+MA2 - Charger - OUT
+MA3 - RF D9
+MA4 - RF D10
+MA5 - RF D11
+
+MB1 - RF +
+MB2 - RF -
+MB3 - RF D12
+MB4 - RF D13
+
+MC1 - Mic +
+MC2 - Mic -
+MC3 - Switch A
+MC4 - Switch B
+MC5 - Mic SIG
