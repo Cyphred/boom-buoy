@@ -11,8 +11,9 @@ bool radio_initialize() {
 		radio.startListening();
 		return true;
 	}
-	else
+	else {
 		return false;
+	}
 }
 
 /**
@@ -31,5 +32,6 @@ void radio_errorLoop() {
 * @param *packet is the pointer to the packet where the received data will be written to.
 */
 void radio_storeReceivedDataIn(Packet * packet) {
-	radio.read(&packet->data, sizeof(packet->data)); // Read data from rf buffer and store it into packet's array.
+	// Read data from rf buffer and store it into packet's array.
+	radio.read(&packet->data, sizeof(packet->data)); 
 }
