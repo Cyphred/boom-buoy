@@ -24,11 +24,11 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-#define CE_PIN   9
-#define CSN_PIN 10
+#define RF_CE_PIN   9
+#define RF_CSN_PIN 10
 const byte stationAddress[5] = { 'R','x','a','a','a' };	// Transmit to this address.
-RF24 radio(CE_PIN, CSN_PIN);
-Buzzer buzzer(8); // Initialize on D8.
+RF24 radio(RF_CE_PIN, RF_CSN_PIN);
+Buzzer buzzer(7); // Initialize on D8.
 int hydrophone = A0;
 
 Packet outgoing;
@@ -44,11 +44,14 @@ struct Settings {
 } settings;
 
 void setup() {
-	pinMode(hydrophone, INPUT); // Hydrophone pin
-	if (radio_initialize())
+	pinMode(hydrophone, INPUT);
+	if (radio_initialize()) {
 		status.radioInitialized = true;
-	else
+		buzzer.genericOK();
+	}
+	else {
 		radio_errorLoop();
+	}
 }
 
 void loop() {
