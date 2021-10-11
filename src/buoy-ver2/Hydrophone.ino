@@ -6,7 +6,7 @@
 * Measures the current sound level.
 */
 void measure() {
-	status.lastMeasureTime = millis(); // Remember current time
+	status.lastMeasureTime = millis();
 	long sum = 0;
 	for(int i=0; i<32; i++) {
 		sum += analogRead(hydrophone);

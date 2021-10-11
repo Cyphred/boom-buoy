@@ -32,16 +32,15 @@ Buzzer buzzer(8); // Initialize on D8.
 
 Packet incoming;
 
-struct Status {
-	bool radioInitialized;
-} status;
+bool radioInitialized;
 
 void setup() {
 	Serial.begin(115200);
 	Serial.print("Initializing radio...");	
 	// Check if transceiver is connected.
 	if (radio_initialize()) {
-		status.radioInitialized = true;
+		radioInitialized = true;
+		buzzer.genericOK();
 		Serial.println("OK");
 	}
 	else {
@@ -54,7 +53,8 @@ void setup() {
 
 void loop() {
 	if (radio.available()) {
-		radio.read(incoming.data, sizeof(incoming.data)); // Read data from rf buffer and store it into packet's array.
+		// Read data from rf buffer and store it into packet's array.
+		radio.read(incoming.data, sizeof(incoming.data)); 
 		Serial.println(incoming.getContent());
 	}
 }

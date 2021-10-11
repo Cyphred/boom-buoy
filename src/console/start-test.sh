@@ -1,6 +1,6 @@
 # !/bin/sh
 
-log_location="/mnt/data/buoy-data"
+log_location="/home/cyphred/buoy-data"
 timestamp=$(date +%Y-%m-%d-%H%M%S)
 
 # $1 is the device that will be passed as a parameter to Console.py
@@ -55,8 +55,11 @@ python Process.py "$log_location/$timestamp/raw-noise-$timestamp.csv" "$log_loca
 
 # Plot the data
 while true; do
-	printf "Variance threshold (default 15): "
+	printf "Variance threshold (default 15, OK to take notes): "
 	read vt
 	[ -z "$vt" ] && vt=15
+	[ "$vt" == "OK" ] && break
 	python Plot.py "$log_location/$timestamp/processed-$timestamp.csv" $vt
 done
+
+vim "$log_location/$timestamp/info.md"
